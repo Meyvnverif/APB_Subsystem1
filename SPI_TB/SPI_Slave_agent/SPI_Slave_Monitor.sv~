@@ -1,0 +1,55 @@
+class spi_slave_monitor extends uvm_monitor;
+
+`uvm_component_utils(spi_slave_monitor)
+//uvm_analysis_port#(packet)ap_mon;
+virtual spi_interface mon_if;
+packet pkt;
+spi_reg_model spi_ral_mod; 
+function new(string name = "spi_slave_monitor", uvm_component parent = null);
+super.new(name,parent);
+endfunction
+
+function void build_phase(uvm_phase phase);
+super.build_phase(phase);
+//ap_mon = new("ap_mon",this);
+pkt = packet::type_id::create("pkt");
+uvm_config_db#(virtual spi_interface)::get(this,"","vif",mon_if);
+uvm_config_db #(spi_reg_model)::get(uvm_root::get(),"*","spi_ral_model",spi_ral_mod);
+endfunction
+task run_phase(uvm_phase phase);
+
+bit bidimode,bidioe,rxonly; 
+
+
+
+//	forever begin
+//	@(mon_if.spi_cb);
+//	if(mon_if.PENABLE && mon_if.PWRITE)begin
+//	pkt.MISO_IN    = mon_if.MISO_IN; 
+//	repeat(3)@(mon_if.spi_cb);
+//	`uvm_info(get_type_name(), $sformatf("MISO_IN = %0h",pkt.MISO_IN),UVM_LOW); 
+
+//end
+//#200;
+//`uvm_info(get_type_name(), $sformatf("penable = %0h pwrite = %0h psel = %0h rxonly = %0h bidioe = %0h bidimode = %0h",mon_if.PENABLE,mon_if.PWRITE,mon_if.PSEL,mon_if.rxonly,mon_if.bidioe,mon_if.bidimode),UVM_LOW);
+
+bidimode = spi_ral.mod_reg.spi_cr1.BIDIMODE.get_mirrored_value();
+bidioe = spi_ral.mod_reg.spi_cr1.BIDIOE.get_mirrored_value();
+rxonly = spi_ral.mod_reg.spi_cr1.RXONLY.get_mirrored_value();
+
+forever begin
+if((mon_if.PENABLE==1) && (mon_if.PWRITE==1) && (mon_if.PSEL==1))
+	if(bidimode==0 || bidimode==1)
+	if(rxonly==0 || bidioe==1)
+	  @(mon_if.spi_mp.spi_cb);     
+       	pkt.MOSI_OUT    = mon_if.MOSI_OUT;
+       repeat(2)@(mon_if.spi_mp.spi_cb);
+ `uvm_info(get_type_name(), $sformatf("MOSI_OUT = %0h",pkt.MOSI_OUT),UVM_LOW);
+//ap_mon.write(pkt);
+end
+ 
+
+//	end
+	
+endtask
+endclass

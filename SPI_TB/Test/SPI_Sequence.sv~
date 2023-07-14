@@ -1,0 +1,336 @@
+
+class spi_basic_sequence extends uvm_sequence#(packet);
+
+  `uvm_object_utils(spi_basic_sequence)
+     
+    //Register model handles
+     spi_reg_model spi_ral; 
+    function new(string name = "spi_basic_sequence");
+	super.new(name);
+	spi_ral = new();
+  endfunction  
+
+   task  config_CR1(input bit b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,[1:0]b10,b11,b12,b13);
+   uvm_status_e status;
+
+    // bseq.config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h03c7);
+
+
+//   spi_ral.mod_reg.spi_cr1.CPHA.set(b13);
+//   spi_ral.mod_reg.spi_cr1.CPOL.set(b12);
+//   spi_ral.mod_reg.spi_cr1.MSTR.set(b11);  //should be 1 for master function
+//   //spi_ral.mod_reg.spi_cr1.BR.set(b10[1:0]);
+//   spi_ral.mod_reg.spi_cr1.SPE.set(b9);
+//   spi_ral.mod_reg.spi_cr1.LSBFIRST.set(b8);
+//   spi_ral.mod_reg.spi_cr1.SSI.set(b7);
+//   spi_ral.mod_reg.spi_cr1.SSM.set(b6);
+//   spi_ral.mod_reg.spi_cr1.RXONLY.set(b5); //should be 0 for full dupelx
+//   spi_ral.mod_reg.spi_cr1.DFF.set(b4);
+//   spi_ral.mod_reg.spi_cr1.CRCNEXT.set(b3);
+//   spi_ral.mod_reg.spi_cr1.CRCEN.set(b2);
+//   spi_ral.mod_reg.spi_cr1.BIDIOE.set(b1);
+//   spi_ral.mod_reg.spi_cr1.BIDIMODE.set(b0);//should be 0 for full dupelx
+//
+//
+   
+   spi_ral.mod_reg.spi_cr1.update(status);
+  endtask 
+  
+  virtual task body();
+
+  config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+   endtask
+               
+endclass 
+
+class spi_base_seq extends spi_basic_sequence;
+spi_reg_model spi_ral;
+
+     `uvm_object_utils(spi_base_seq)
+       function new (string name = "spi_base_seq");
+	super.new(name);
+       spi_ral = new();
+  endfunction
+  
+ task  config_CR1(input bit b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,[1:0]b10,b11,b12,b13);
+   uvm_status_e status;
+
+    // bseq.config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h03c7);
+
+
+//   spi_ral.mod_reg.spi_cr1.CPHA.set(b13);
+//   spi_ral.mod_reg.spi_cr1.CPOL.set(b12);
+//   spi_ral.mod_reg.spi_cr1.MSTR.set(b11);  //should be 1 for master function
+//   //spi_ral.mod_reg.spi_cr1.BR.set(b10[1:0]);
+//   spi_ral.mod_reg.spi_cr1.SPE.set(b9);
+//   spi_ral.mod_reg.spi_cr1.LSBFIRST.set(b8);
+//   spi_ral.mod_reg.spi_cr1.SSI.set(b7);
+//   spi_ral.mod_reg.spi_cr1.SSM.set(b6);
+//   spi_ral.mod_reg.spi_cr1.RXONLY.set(b5); //should be 0 for full dupelx
+//   spi_ral.mod_reg.spi_cr1.DFF.set(b4);
+//   spi_ral.mod_reg.spi_cr1.CRCNEXT.set(b3);
+//   spi_ral.mod_reg.spi_cr1.CRCEN.set(b2);
+//   spi_ral.mod_reg.spi_cr1.BIDIOE.set(b1);
+//   spi_ral.mod_reg.spi_cr1.BIDIMODE.set(b0);//should be 0 for full dupelx
+//
+//
+   
+   spi_ral.mod_reg.spi_cr1.update(status);
+  endtask 
+  task body();
+  endtask
+endclass	
+
+class spi_CR1_reg extends spi_base_seq;
+
+     spi_reg_model spi_ral;
+     spi_basic_sequence bseq;
+
+     `uvm_object_utils(spi_CR1_reg)
+       function new (string name = "spi_CR1_reg");
+	super.new(name);
+       bseq = spi_basic_sequence::type_id::create("bseq");
+       spi_ral = new();
+  endfunction
+  
+ 
+  task body();
+   uvm_status_e status;
+   bit [31:0]PRDATA;
+ //cr1(bidimode,bidioe,crcen,crcnext,dff,rxonly,ssm,ssi,lsbfirst,spe,br,mstr,cpol,cpha) 
+    //config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h03c7);
+     spi_ral.mod_reg.spi_cr1.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+
+
+
+
+class spi_reg_backdoor extends spi_basic_sequence;
+
+     `uvm_object_utils(spi_reg_backdoor)
+      spi_reg_model spi_ral;
+  function new (string name = "spi_reg_backdoor");
+	super.new(name);
+  endfunction
+
+  task body();
+  uvm_status_e status;
+  bit [31:0]PRDATA;
+ 	spi_ral.mod_reg.spi_cr1.write(status,16'h03c7,UVM_BACKDOOR);
+	//force top.dut.top.apb_slave.SPI_CR1=16'h03c7; 
+ 	spi_ral.mod_reg.spi_cr1.read(status,PRDATA);
+        //spi_ral.mod_reg.spi_sr.write(status,16'h00aa,UVM_BACKDOOR);
+        //spi_ral.mod_reg.spi_sr.read(status,PRDATA);
+	`uvm_info(get_type_name(),$sformatf("In side backdoor sequence"),UVM_NONE)
+  endtask
+ endclass
+
+
+
+class spi_DR_WR_reg extends spi_basic_sequence;
+
+     `uvm_object_utils(spi_DR_WR_reg)
+      spi_reg_model spi_ral;
+  function new (string name = "spi_DR_WR_reg");
+	super.new(name);
+  endfunction
+
+  task body();
+  uvm_status_e status;
+   uvm_reg_bus_op rw;
+   if(rw.status != UVM_NOT_OK)begin
+      spi_ral.mod_reg.spi_dr_tx.sample(0,-1,0,null);
+  end
+
+  spi_ral.mod_reg.spi_dr_tx.write(status,16'h5364);     	 
+  endtask
+ endclass
+class spi_DR_RD_reg extends spi_basic_sequence;
+
+     `uvm_object_utils(spi_DR_RD_reg)
+      spi_reg_model spi_ral;
+  function new (string name = "spi_DR_RD_reg");
+	super.new(name);
+  endfunction
+
+  task body();
+  uvm_status_e status;
+   uvm_reg_bus_op rw;
+   bit [31:0]PRDATA;
+
+  if(rw.status != UVM_NOT_OK) begin
+      spi_ral.mod_reg.spi_dr_rx.sample(1,-1,0,null);
+    end
+
+    spi_ral.mod_reg.spi_dr_rx.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+class spi_fd_sequence extends spi_basic_sequence;
+                          
+  `uvm_object_utils(spi_fd_sequence)
+   packet req;                     
+  //Default Constructor   
+  function new(string name = "spi_fd_sequence");
+        super.new(name); 
+        req = packet::type_id::create("req");
+  endfunction             
+  virtual task body;
+        start_item(req);
+	 req.randomize with {PWDATA==16'hFF; PWRITE==1;};
+	`uvm_info(get_type_name(), $sformatf("Base_seq: Inside body the value of Data is %0h ",req.PWDATA), UVM_LOW);
+	finish_item(req);
+  endtask
+endclass
+
+class spi_CR2_reg extends spi_basic_sequence;
+
+     `uvm_object_utils(spi_CR2_reg)
+      spi_reg_model spi_ral;
+  function new (string name = "spi_CR2_reg");
+	super.new(name);
+  endfunction
+
+  task body();
+  uvm_status_e status;
+  bit [31:0]PRDATA;
+   uvm_reg_bus_op rw;
+  if(rw.status != UVM_NOT_OK)begin
+     spi_ral.mod_reg.spi_cr2.sample(0,-1,0,null);
+  end
+      
+ 	spi_ral.mod_reg.spi_cr2.write(status,16'h0004);
+ 	spi_ral.mod_reg.spi_cr2.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+ class spi_SR_reg extends spi_basic_sequence;
+
+     `uvm_object_utils(spi_SR_reg)
+      spi_reg_model spi_ral;
+  function new (string name = "spi_SR_reg");
+	super.new(name);
+  endfunction
+
+  task body();
+  uvm_status_e status;
+  bit [31:0]PRDATA;
+   uvm_reg_bus_op rw;
+  if(rw.status != UVM_NOT_OK)begin
+     spi_ral.mod_reg.spi_sr.sample(0,-1,1,null);
+  end
+      
+ 	spi_ral.mod_reg.spi_sr.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+class spi_reset extends spi_basic_sequence;
+
+     `uvm_object_utils(spi_reset)
+      spi_reg_model spi_ral;
+  function new (string name = "spi_SR_reg");
+	super.new(name);
+  endfunction
+
+  task body();
+virtual spi_interface  intf;
+ uvm_config_db#(virtual spi_interface)::get(null,"","vif",intf);
+ //reset
+		#20;
+		intf.PRESETN=0;
+		#10;
+                intf.PRESETN=1;
+
+  endtask
+ endclass
+
+ class spi_dff0_lsb0 extends spi_basic_sequence;
+
+     spi_reg_model spi_ral;
+     spi_basic_sequence bseq;
+
+     `uvm_object_utils(spi_dff0_lsb0)
+       function new (string name = "spi_dff0_lsb0");
+	super.new(name);
+       bseq = spi_basic_sequence::type_id::create("bseq");
+  endfunction
+
+  task body();
+   uvm_status_e status;
+   bit [31:0]PRDATA;
+ //cr1(bidimode,bidioe,crcen,crcnext,dff,rxonly,ssm,ssi,lsbfirst,spe,br,mstr,cpol,cpha) 
+    // bseq.config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h0344);
+     spi_ral.mod_reg.spi_cr1.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+ class spi_dff0_lsb1 extends spi_basic_sequence;
+
+     spi_reg_model spi_ral;
+     spi_basic_sequence bseq;
+
+     `uvm_object_utils(spi_dff0_lsb1)
+       function new (string name = "spi_dff0_lsb1");
+	super.new(name);
+       bseq = spi_basic_sequence::type_id::create("bseq");
+  endfunction
+
+  task body();
+   uvm_status_e status;
+   bit [31:0]PRDATA;
+ //cr1(bidimode,bidioe,crcen,crcnext,dff,rxonly,ssm,ssi,lsbfirst,spe,br,mstr,cpol,cpha) 
+    // bseq.config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h03c4);
+     spi_ral.mod_reg.spi_cr1.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+ class spi_dff1_lsb0 extends spi_basic_sequence;
+
+     spi_reg_model spi_ral;
+     spi_basic_sequence bseq;
+
+     `uvm_object_utils(spi_dff1_lsb0)
+       function new (string name = "spi_dff1_lsb0");
+	super.new(name);
+       bseq = spi_basic_sequence::type_id::create("bseq");
+  endfunction
+
+  task body();
+   uvm_status_e status;
+   bit [31:0]PRDATA;
+ //cr1(bidimode,bidioe,crcen,crcnext,dff,rxonly,ssm,ssi,lsbfirst,spe,br,mstr,cpol,cpha) 
+    // bseq.config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h0b44);
+     spi_ral.mod_reg.spi_cr1.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+  class spi_dff1_lsb1 extends spi_basic_sequence;
+
+     spi_reg_model spi_ral;
+     spi_basic_sequence bseq;
+
+     `uvm_object_utils(spi_dff1_lsb1)
+       function new (string name = "spi_dff1_lsb1");
+	super.new(name);
+       bseq = spi_basic_sequence::type_id::create("bseq");
+  endfunction
+
+  task body();
+   uvm_status_e status;
+   bit [31:0]PRDATA;
+ //cr1(bidimode,bidioe,crcen,crcnext,dff,rxonly,ssm,ssi,lsbfirst,spe,br,mstr,cpol,cpha) 
+    // bseq.config_CR1(0,0,0,0,0,0,1,1,1,1,3'b00,1,1,1);
+     spi_ral.mod_reg.spi_cr1.write(status,16'h0bc4);
+     spi_ral.mod_reg.spi_cr1.read(status,PRDATA);      	 
+  endtask
+ endclass
+
+

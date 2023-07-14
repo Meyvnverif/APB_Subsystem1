@@ -1,0 +1,38 @@
+class packet extends uvm_sequence_item;
+
+  rand bit [31:0]PADDR;
+  rand bit PSEL;
+  rand bit [31:0]PWDATA;
+  rand bit PWRITE;
+  rand logic MISO_IN;
+  rand bit MOSI_IN;
+  rand bit PENABLE;
+       bit [31:0]PRDATA;
+       bit PREADY;
+       bit PSLVERR;
+       bit MISO_OUT;
+       bit MOSI_OUT;
+`uvm_object_utils_begin(packet)
+	 `uvm_field_int(PADDR,UVM_ALL_ON)
+         `uvm_field_int(PSEL,UVM_ALL_ON)
+         `uvm_field_int(PWDATA,UVM_ALL_ON)
+         `uvm_field_int(PWRITE,UVM_ALL_ON)
+         `uvm_field_int(MISO_IN,UVM_ALL_ON)
+	 `uvm_field_int(MISO_OUT,UVM_ALL_ON)
+         `uvm_field_int(PRDATA,UVM_ALL_ON)
+         `uvm_field_int(PREADY,UVM_ALL_ON)
+         `uvm_field_int(PSLVERR,UVM_ALL_ON)
+         `uvm_field_int(MOSI_IN,UVM_ALL_ON)
+	 `uvm_field_int(MOSI_OUT,UVM_ALL_ON)
+`uvm_object_utils_end
+
+
+  //constructor
+function new(string name="packet");
+	super.new(name);
+endfunction
+
+//constraints
+constraint addr_range{PADDR inside {[1:200]};};
+
+endclass
